@@ -13,9 +13,9 @@ Encoder::Encoder(uint8_t pinCLK, uint8_t pinDT, uint8_t pinSW,
     pinMode(pinDT, INPUT);
     pinMode(pinSW, INPUT);
 
-    attachInterrupt(0, ISR_callback_CLK, CHANGE);
-    attachInterrupt(1, ISR_callback_DT, CHANGE);
-    attachInterrupt(2, ISR_callback_SW, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(this->pinCLK), ISR_callback_CLK, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(this->pinDT), ISR_callback_DT, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(this->pinSW), ISR_callback_SW, CHANGE);
 
     // Serial.begin(9600);
 }
