@@ -1,10 +1,7 @@
 #include "rotary_encoder.h"
 
 
-Encoder::Encoder(uint8_t pinCLK, uint8_t pinDT, uint8_t pinSW, 
-                 void (*ISR_callback_CLK)(void), 
-                 void (*ISR_callback_DT)(void), 
-                 void (*ISR_callback_SW)(void))
+Encoder::Encoder(uint8_t pinCLK, uint8_t pinDT, uint8_t pinSW)
 {
     this->pinCLK = pinCLK;
     this->pinDT = pinDT;
@@ -12,13 +9,17 @@ Encoder::Encoder(uint8_t pinCLK, uint8_t pinDT, uint8_t pinSW,
     pinMode(pinCLK, INPUT);
     pinMode(pinDT, INPUT);
     pinMode(pinSW, INPUT);
+}
 
+void Encoder::setup(void (*ISR_callback_CLK)(void), void (*ISR_callback_DT)(void), 
+                    void (*ISR_callback_SW)(void)) 
+{
     attachInterrupt(digitalPinToInterrupt(this->pinCLK), ISR_callback_CLK, CHANGE);
     attachInterrupt(digitalPinToInterrupt(this->pinDT), ISR_callback_DT, CHANGE);
     attachInterrupt(digitalPinToInterrupt(this->pinSW), ISR_callback_SW, CHANGE);
 
-    // Serial.begin(9600);
 }
+
 uint8_t Encoder::getEncoderValue(uint8_t value) { 
     if(value >= this->max_value) {
         value = this->max_value;
@@ -59,12 +60,11 @@ void Encoder::processEncoderCLK()
     
     this->encoderVal = this->getEncoderValue(encoderVal);
 
-    // for debugging purposes only
-    // Serial.println(encoderVal, DEC);
+    // TODO remove, for debugging purposes only
+    Serial.println("CLK:");
+    Serial.println(encoderVal, DEC);
 }
 
-
-//porocess encoder´s pinB
 void Encoder::processEncoderDT()
 {
     if (digitalRead(this->pinDT) == HIGH)
@@ -89,15 +89,23 @@ void Encoder::processEncoderDT()
             this->encoderVal -= 1; // CCW
         }
     }
+    this->encoderVal = this->getEncoderValue(encoderVal);
+
+    // TODO remove, for debugging purposes only
+    Serial.println("DT:");
+    Serial.println(encoderVal, DEC);
 }
+
 void Encoder::processEncoderSW(){
     if( digitalRead(this->pinSW) == HIGH) {
         // Indicates it was pushed
         this->encoderSWisPushed = true;
-        //Do something with it
+        //Do something witattachInterrupth it
     } else {
         //Indicates it was released
         this->encoderSWisPushed = false;
         // Do something with it
     }
+    // TODO remove, for debugging purposes only
+    Serial.println("SW was pressed");
 }
