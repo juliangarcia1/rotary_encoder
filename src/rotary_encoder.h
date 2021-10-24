@@ -1,7 +1,7 @@
 
 class Encoder {
     private:
-        uint8_t encoderValue = 0;
+        uint8_t encoderVal = 0;
         uint8_t encoderSWisPushed = false;
         uint8_t max_value = 100;
         uint8_t min_value = 0;
