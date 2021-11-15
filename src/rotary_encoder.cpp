@@ -20,18 +20,19 @@ void Encoder::setup(void (*ISR_callback_CLK)(void), void (*ISR_callback_DT)(void
 
 }
 
-uint8_t Encoder::getEncoderValue(uint8_t value) { 
-    if(value >= this->max_value) {
-        value = this->max_value;
-    }
-    if(value <= this->min_value) {
+uint8_t Encoder::getEncoderValue(uint8_t lastValue, uint8_t value) { 
+    if( (lastValue == this->min_value) && (value == 255) ) {
         value = this->min_value;
+    }
+    if( value >= this->max_value ) {
+        value = this->max_value;
     }
     return value;
 }
 
 void Encoder::processEncoderCLK()
 {
+    uint8_t lastValue =this->encoderVal;
     // look for a low-to-high on channel A
     if (digitalRead(this->pinCLK) == HIGH)
     {
@@ -58,7 +59,7 @@ void Encoder::processEncoderCLK()
         }
     }
     
-    this->encoderVal = this->getEncoderValue(encoderVal);
+    this->encoderVal = this->getEncoderValue(lastValue ,encoderVal);
 
     // TODO remove, for debugging purposes only
     Serial.println("CLK:");
@@ -67,6 +68,8 @@ void Encoder::processEncoderCLK()
 
 void Encoder::processEncoderDT()
 {
+    uint8_t lastValue =this->encoderVal;
+
     if (digitalRead(this->pinDT) == HIGH)
     {
         if (digitalRead(this->pinCLK) == HIGH)
@@ -89,7 +92,7 @@ void Encoder::processEncoderDT()
             this->encoderVal -= 1; // CCW
         }
     }
-    this->encoderVal = this->getEncoderValue(encoderVal);
+    this->encoderVal = this->getEncoderValue(lastValue ,encoderVal);
 
     // TODO remove, for debugging purposes only
     Serial.println("DT:");
